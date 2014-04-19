@@ -1,27 +1,40 @@
 {
-    "author": {
-        "name": "Jeff Hoffer",
-        "email": "jeff@hwgray.com"
-    },
-    "name": "ng-socket-io-dev",
-    "version": "0.3.0",
-    "description": "SocketIO module for AngularJS",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/eudaimos/ngSocketIO.git"
-    },
-    "scripts": {
-        "test": "grunt test"
-    },
-    "dependencies": {},
-    "devDependencies": {
-        "grunt": "=0.4.1",
-        "grunt-contrib-uglify": "=0.2.2",
-        "grunt-contrib-watch": "=0.5.3",
-        "grunt-contrib-jshint": "=0.6.3",
-        "grunt-contrib-clean": "=0.5.0",
-        "grunt-ng-annotate": "=0.0.4",
-        "grunt-karma": "=0.6.2"
-    }
+  "author": "Jeff Hoffer <jeff@hwgray.com>",
+  "name": "ng-socket-io-dev",
+  "version": "0.3.0",
+  "description": "SocketIO module for AngularJS",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eudaimos/ngSocketIO.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "socket.io": "~0.9.16"
+  },
+  "devDependencies": {
+    "grunt": "=0.4.1",
+    "grunt-contrib-uglify": "=0.2.2",
+    "grunt-contrib-watch": "=0.5.3",
+    "grunt-contrib-jshint": "=0.6.3",
+    "grunt-contrib-clean": "=0.5.0",
+    "grunt-ng-annotate": "=0.0.4",
+    "grunt-karma": "=0.6.2"
+  },
+  "bugs": {
+    "url": "https://github.com/eudaimos/ngSocketIO/issues"
+  },
+  "homepage": "https://github.com/eudaimos/ngSocketIO",
+  "main": "Gruntfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "angular",
+    "angularjs",
+    "socket.io",
+    "websockets"
+  ]
 }
