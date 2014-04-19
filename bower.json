@@ -6,7 +6,7 @@
     "eudaimos <jeff@hwgray.com>"
   ],
   "description": "Socket.IO module for AngularJS forked from mbenford/ngSocketIO",
-  "main": "build",
+  "main": "build/ng-socket-io-dev.js",
   "moduleType": [
     "globals"
   ],
