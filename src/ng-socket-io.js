@@ -2,6 +2,11 @@
 'use strict';
 
 angular.module('socket-io', []).factory('socket', function($rootScope, io) {
+    // when forwarding events, prefix the event name
+    // TODO: allow options to change prefix
+    var defaultPrefix = 'socket:',
+      defaultScope = $rootScope;
+
     var socket = io.connect(),
         events = {},
         that = {};
@@ -87,6 +92,37 @@ angular.module('socket-io', []).factory('socket', function($rootScope, io) {
             else {
                 socket.emit(name, data);
             }
+        },
+
+        // TODO: move to a provider config
+        // TODO: add karma spec
+        // Ported from:
+        /*
+         * angular-socket-io v0.3.0 https://github.com/btford/angular-socket-io
+         * (c) 2014 Brian Ford http://briantford.com
+         * License: MIT
+         */
+        // when socket.on('someEvent', fn (data) { ... }),
+        // call scope.$broadcast('someEvent', data)
+        forward: function (events, scope) {
+          if (events instanceof Array === false) {
+            events = [events];
+          }
+          if (!scope) {
+            scope = defaultScope;
+          }
+          events.forEach(function (eventName) {
+            var prefixedEvent = defaultPrefix + eventName;
+            //var forwardBroadcast = asyncAngularify(socket, function (data) {
+            var forwardBroadcast = wrapCallback(socket, function (data) {
+              scope.$broadcast(prefixedEvent, data);
+            });
+            scope.$on('$destroy', function () {
+              // socket.removeListener(eventName, forwardBroadcast);
+              removeCallback(eventName, forwardBroadcast);
+            });
+            socket.on(eventName, forwardBroadcast);
+          });
         }
     };
 
