@@ -1,11 +1,11 @@
 {
-  "name": "ng-socket-io",
+  "name": "ng-socket-io-dev",
   "version": "0.3.0",
-  "homepage": "https://github.com/mbenford/ngSocketIO",
+  "homepage": "https://github.com/eudaimos/ngSocketIO",
   "authors": [
-    "mbenford <michael@michaelbenford.net>"
+    "eudaimos <jeff@hwgray.com>"
   ],
-  "description": "Socket.IO module for AngularJS",
+  "description": "Socket.IO module for AngularJS forked from mbenford/ngSocketIO",
   "main": "build",
   "moduleType": [
     "globals"
