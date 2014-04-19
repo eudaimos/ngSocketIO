@@ -11,9 +11,9 @@ angular.module('socket-io', []).factory('socket', function($rootScope, io) {
         events = {},
         that = {};
 
-    var addCallback = function(name, callback) {
+    var addCallback = function(name, callback, scope) {
         var event = events[name],
-            wrappedCallback = wrapCallback(callback);
+            wrappedCallback = wrapCallback(callback, scope);
 
         if (!event) {
             event = events[name] = [];
@@ -43,13 +43,13 @@ angular.module('socket-io', []).factory('socket', function($rootScope, io) {
         delete events[name];
     };
 
-    var wrapCallback = function(callback) {
+    var wrapCallback = function(callback, scope) {
         var wrappedCallback = angular.noop;
 
         if (callback) {
             wrappedCallback = function() {
                 var args = arguments;
-                $rootScope.$apply(function() {
+                (scope || $rootScope).$apply(function() {
                     callback.apply(socket, args);
                 });
             };
@@ -111,18 +111,23 @@ angular.module('socket-io', []).factory('socket', function($rootScope, io) {
           if (!scope) {
             scope = defaultScope;
           }
+          var listeners = {};
           events.forEach(function (eventName) {
             var prefixedEvent = defaultPrefix + eventName;
             //var forwardBroadcast = asyncAngularify(socket, function (data) {
-            var forwardBroadcast = wrapCallback(socket, function (data) {
+            var forwardBroadcast = addCallback(eventName, function (data) {
               scope.$broadcast(prefixedEvent, data);
-            });
-            scope.$on('$destroy', function () {
-              // socket.removeListener(eventName, forwardBroadcast);
-              removeCallback(eventName, forwardBroadcast);
-            });
+            }, scope);
+            var l = new listener(eventName, forwardBroadcast);
+            l.bindTo(scope);
+            listeners[eventName] = l;
+            // scope.$on('$destroy', function () {
+            //   // socket.removeListener(eventName, forwardBroadcast);
+            //   removeCallback(eventName, forwardBroadcast);
+            // });
             socket.on(eventName, forwardBroadcast);
           });
+          return listeners;
         }
     };
 
