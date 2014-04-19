@@ -1,15 +1,15 @@
 {
     "author": {
-        "name": "Michael Benford",
-        "email": "michael@michaelbenford.net"
+        "name": "Jeff Hoffer",
+        "email": "jeff@hwgray.com"
     },
-    "name": "ng-socket-io",
-    "version": "0.2.0",
+    "name": "ng-socket-io-dev",
+    "version": "0.3.0",
     "description": "SocketIO module for AngularJS",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/mbenford/ngSocketIO.git"
+        "url": "https://github.com/eudaimos/ngSocketIO.git"
     },
     "scripts": {
         "test": "grunt test"
