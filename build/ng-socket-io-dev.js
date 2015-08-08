@@ -1,107 +1,114 @@
 (function() {
 'use strict';
 
-angular.module('socket-io', []).factory('socket', ["$rootScope","io", function($rootScope, io) {
-    // when forwarding events, prefix the event name
-    // TODO: allow options to change prefix
-    var defaultPrefix = 'socket:',
-      defaultScope = $rootScope;
+angular.module('socket-io', [])
+  .provider('socket', function SocketProvider() {
+    var ioHost = '';
+    this.host = function (url) {
+      ioHost = url;
+    };
 
-    var socket = io.connect(),
-        events = {},
-        that = {};
+    this.$get = ["$rootScope","io", function SocketFactory($rootScope, io) {
+      // when forwarding events, prefix the event name
+      // TODO: allow options to change prefix
+      var defaultPrefix = 'socket:',
+          defaultScope = $rootScope;
 
-    var addCallback = function(name, callback, scope) {
+      var socket = ioHost ? io.connect(ioHost) : io.connect(),
+          events = {},
+          that = {};
+
+      var addCallback = function(name, callback, scope) {
         var event = events[name],
             wrappedCallback = wrapCallback(callback, scope);
 
         if (!event) {
-            event = events[name] = [];
+          event = events[name] = [];
         }
 
         event.push({ callback: callback, wrapper: wrappedCallback });
-        return wrappedCallback;
-    };
+          return wrappedCallback;
+      };
 
-    var removeCallback = function(name, callback) {
+      var removeCallback = function(name, callback) {
         var event = events[name],
             wrappedCallback;
 
         if (event) {
-            for(var i = event.length - 1; i >= 0; i--) {
-                if (event[i].callback === callback) {
-                    wrappedCallback = event[i].wrapper;
-                    event.slice(i, 1);
-                    break;
-                }
+          for(var i = event.length - 1; i >= 0; i--) {
+            if (event[i].callback === callback) {
+              wrappedCallback = event[i].wrapper;
+              event.slice(i, 1);
+              break;
             }
+          }
         }
         return wrappedCallback;
-    };
+      };
 
-    var removeAllCallbacks = function(name) {
+      var removeAllCallbacks = function(name) {
         delete events[name];
-    };
+      };
 
-    var wrapCallback = function(callback, scope) {
+      var wrapCallback = function(callback, scope) {
         var wrappedCallback = angular.noop;
 
         if (callback) {
-            wrappedCallback = function() {
-                var args = arguments;
-                (scope || $rootScope).$apply(function() {
-                    callback.apply(socket, args);
-                });
-            };
+          wrappedCallback = function() {
+            var args = arguments;
+            (scope || $rootScope).$apply(function() {
+              callback.apply(socket, args);
+            });
+          };
         }
         return wrappedCallback;
-    };
+      };
 
-    var listener = function(name, callback) {
+      var listener = function(name, callback) {
         return {
-            bindTo: function(scope) {
-                if (scope != null) {
-                    scope.$on('$destroy', function() {
-                        that.removeListener(name, callback);
-                    });
-                }
+          bindTo: function(scope) {
+            if (scope != null) {
+              scope.$on('$destroy', function() {
+                that.removeListener(name, callback);
+              });
             }
+          }
         };
-    };
+      };
 
-    that = {
+      that = {
         on: function(name, callback) {
-            socket.on(name, addCallback(name, callback));
-            return listener(name, callback);
+          socket.on(name, addCallback(name, callback));
+          return listener(name, callback);
         },
         once: function(name, callback) {
-            socket.once(name, addCallback(name, callback));
-            return listener(name, callback);
+          socket.once(name, addCallback(name, callback));
+          return listener(name, callback);
         },
         removeListener: function(name, callback) {
-            socket.removeListener(name, removeCallback(name, callback));
+          socket.removeListener(name, removeCallback(name, callback));
         },
         removeAllListeners: function(name) {
-            socket.removeAllListeners(name);
-            removeAllCallbacks(name);
+          socket.removeAllListeners(name);
+          removeAllCallbacks(name);
         },
         emit: function(name, data, callback) {
-            if (callback) {
-                socket.emit(name, data, wrapCallback(callback));
-            }
-            else {
-                socket.emit(name, data);
-            }
+          if (callback) {
+            socket.emit(name, data, wrapCallback(callback));
+          }
+          else {
+            socket.emit(name, data);
+          }
         },
 
         // TODO: move to a provider config
         // TODO: add karma spec
         // Ported from:
         /*
-         * angular-socket-io v0.3.0 https://github.com/btford/angular-socket-io
-         * (c) 2014 Brian Ford http://briantford.com
-         * License: MIT
-         */
+        * angular-socket-io v0.3.0 https://github.com/btford/angular-socket-io
+        * (c) 2014 Brian Ford http://briantford.com
+        * License: MIT
+        */
         // when socket.on('someEvent', fn (data) { ... }),
         // call scope.$broadcast('someEvent', data)
         forward: function (events, scope) {
@@ -129,10 +136,11 @@ angular.module('socket-io', []).factory('socket', ["$rootScope","io", function($
           });
           return listeners;
         }
-    };
+      };
 
-    return that;
-}])
+      return that;
+    }];
+)
 .factory('io', function() {
     return io;
 });
