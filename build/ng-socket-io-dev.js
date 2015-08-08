@@ -140,7 +140,7 @@ angular.module('socket-io', [])
 
       return that;
     }];
-)
+})
 .factory('io', function() {
     return io;
 });
