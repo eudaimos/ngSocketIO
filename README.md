@@ -32,16 +32,24 @@ Simply download either `ng-socket-io` or `ng-socket-io.min.js` from the build fo
             });
 
             // Raising an event
-            $scope.raise = function(message) {            
+            $scope.raise = function(message) {
                 socket.emit('otherEvent', message);
             };
         });
     </script>
-    
+
 ## Cancelling a subscription automatically on scope destruction
 
 If you want to unsubscribe from an event automatically on scope destruction, just call `bindTo` passing the current scope:
 
     socket.on('someEvent', function(data) {
-    ... 
+    ...
     }).bindTo($scope);
+
+## Event Forward Goodness ##
+
+This package adds to the mbenford/ngSocketIO to include event forwarding from btford/angular-socket-io with the `socket.forward` method
+
+## Provider Implementation ##
+
+Created as an AngularJS Provider instead of just a Factory allows clients to use `app.config(function (socketProvider) { socketProvider.host(…); })` for controlling to what host `io.connect(…)` is connecting
