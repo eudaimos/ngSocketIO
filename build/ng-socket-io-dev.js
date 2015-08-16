@@ -3,16 +3,23 @@
 
 angular.module('socket-io', [])
   .provider('socket', function SocketProvider() {
-    var ioHost = '';
+        // default host to connect to is the host that served the web page
+    var ioHost = '',
+        // when forwarding events, prefix the event name
+        defaultPrefix = 'socket:';
+
+    // set the host to which it will connect
     this.host = function (url) {
       ioHost = url;
     };
 
+    // set the prefix for events fowarded from the socket
+    this.defaultEventPrefix = function (prefix) {
+      defaultPrefix = prefix;
+    };
+
     this.$get = ["$rootScope","io", function SocketFactory($rootScope, io) {
-      // when forwarding events, prefix the event name
-      // TODO: allow options to change prefix
-      var defaultPrefix = 'socket:',
-          defaultScope = $rootScope;
+      var defaultScope = $rootScope;
 
       var socket = ioHost ? io.connect(ioHost) : io.connect(),
           events = {},
