@@ -18,7 +18,7 @@ angular.module('socket-io', [])
       defaultPrefix = prefix;
     };
 
-    this.$get = ["$rootScope","io", function SocketFactory($rootScope, io) {
+    this.$get = ["$rootScope", "$q","io", function SocketFactory($rootScope, $q, io) {
       var defaultScope = $rootScope;
 
       var socket = ioHost ? io.connect(ioHost) : io.connect(),
@@ -128,7 +128,7 @@ angular.module('socket-io', [])
           var listeners = {};
           events.forEach(function (eventName) {
             var prefixedEvent = defaultPrefix + eventName;
-            //var forwardBroadcast = asyncAngularify(socket, function (data) {
+            //var forwardBroadcast = asyncAngularify(socket, function (data) { //}
             var forwardBroadcast = addCallback(eventName, function (data) {
               scope.$broadcast(prefixedEvent, data);
             }, scope);
@@ -142,6 +142,21 @@ angular.module('socket-io', [])
             socket.on(eventName, forwardBroadcast);
           });
           return listeners;
+        },
+
+        promisified: function (emitEvent, resolveEvent, rejectEvent) {
+          return function (d) {
+            var p = $q(function (resolve, reject) {
+              socket.once(resolveEvent, function (data) {
+                resolve(data);
+              });
+              socket.once(rejectEvent, function (err) {
+                reject(err);
+              });
+            });
+            socket.emit(emitEvent, d);
+            return p;
+          };
         }
       };
 
